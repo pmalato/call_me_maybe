@@ -1,13 +1,11 @@
 [project]
-name = "call_me_maybe"
+name = "call-me-maybe"
 version = "0.1.0"
-description = "Function calling system for small-sized LLM"
+description = "Add your description here"
+readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["pydantic>=2.0.0"]
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.uv]
-dev-dependencies = ["llm_sdk"]
+dependencies = [
+    "numpy>=2.2.6",
+    "pydantic>=2.13.5",
+    "qwen>=0.1.1",
+]

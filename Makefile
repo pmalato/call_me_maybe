@@ -1,8 +1,10 @@
 LFLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 install:
+	uv sync
 
 run:
+	uv run call-me-maybe.py
 
 debug:
 
