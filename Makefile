@@ -1,3 +1,6 @@
+export UV_CACHE_DIR := $(HOME)/sgoinfre/pecoelho/.cache/uv
+export HF_HOME := &(HOME)/sgoinfre/pecoelho/.cache/hugginface
+
 LFLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 install:

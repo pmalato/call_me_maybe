@@ -1,11 +1,21 @@
 [project]
 name = "call-me-maybe"
 version = "0.1.0"
-description = "Add your description here"
+description = "Constrained decoding for an imported llm: Qwen3-0.6B"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "accelerate>=1.15.0",
+    "flake8>=7.3.0",
+    "flake8-pyproject>=1.2.4",
+    "mypy>=2.3.1",
     "numpy>=2.2.6",
     "pydantic>=2.13.5",
-    "qwen>=0.1.1",
+]
+
+[tool.flake8]
+extend-exclude = [
+    ".venv/",
+    "llm_sdk",
+    "moulinette"
 ]
