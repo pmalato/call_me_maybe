@@ -1,11 +1,13 @@
 from .errors import (
     CallMeMaybeErrors,
     MissingSeperatorError,
-    PromptFileError
+    PromptFileError,
+    DuplicatePromptError
 )
 
 __all__ = [
     "CallMeMaybeErrors",
     "MissingSeperatorError",
-    "PromptFileError"
+    "PromptFileError",
+    "DuplicatePromptError"
 ]

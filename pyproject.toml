@@ -15,7 +15,8 @@ dependencies = [
 
 [tool.flake8]
 extend-exclude = [
-    ".venv/",
+    "lib",
+    "bin",
     "llm_sdk",
     "moulinette"
 ]

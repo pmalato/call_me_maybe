@@ -7,9 +7,10 @@ install:
 	uv sync
 
 run:
-	uv run call-me-maybe.py
+	uv run __main__.py
 
 debug:
+	uv run python3 -m pdb __main__.py
 
 clean:
 	rm -fr .mypy_cache
