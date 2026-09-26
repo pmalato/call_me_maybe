@@ -1,6 +1,7 @@
 from src.errors import (
     MissingSeperatorError,
-    PromptFileError
+    PromptFileError,
+    DuplicatePromptError
     )
 
 
@@ -34,6 +35,8 @@ class Parser():
                     raise PromptFileError(line_count)
                 if not value.startswith('"') or not value.endswith('"'):
                     raise PromptFileError(line_count)
+                if value in self._prompt:
+                    raise DuplicatePromptError(line_count)
                 self._prompt += [value]
 
     def get_prompts(self) -> list[str]:

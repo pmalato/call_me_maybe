@@ -16,3 +16,10 @@ class PromptFileError(CallMeMaybeErrors):
             message: str = 'Invalid Prompt. Expected: '
             '"prompt": "prompt_as_str"') -> None:
         super().__init__(f"{message}, line {lineno}")
+
+
+class DuplicatePromptError(CallMeMaybeErrors):
+    def __init__(
+            self, lineno: int,
+            message: str = "Duplicate Prompt") -> None:
+        super().__init__(f"{message}, line {lineno}")
