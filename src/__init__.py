@@ -2,12 +2,14 @@ from .errors import (
     CallMeMaybeErrors,
     MissingSeperatorError,
     PromptFileError,
-    DuplicatePromptError
+    DuplicatePromptError,
+    FunctionsFileError
 )
 
 __all__ = [
     "CallMeMaybeErrors",
     "MissingSeperatorError",
     "PromptFileError",
-    "DuplicatePromptError"
+    "DuplicatePromptError",
+    "FunctionsFileError"
 ]

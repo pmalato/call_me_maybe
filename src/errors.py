@@ -23,3 +23,8 @@ class DuplicatePromptError(CallMeMaybeErrors):
             self, lineno: int,
             message: str = "Duplicate Prompt") -> None:
         super().__init__(f"{message}, line {lineno}")
+
+
+class FunctionsFileError(CallMeMaybeErrors):
+    def __init__(self, message: str = "Invalid File Format") -> None:
+        super().__init__(message)
