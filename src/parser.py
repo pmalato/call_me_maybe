@@ -6,12 +6,18 @@ from src.errors import (
     DuplicatePromptError,
     FunctionsFileError
     )
+from llm_sdk.llm_sdk import Small_LLM_Model
 
 
 class Parser():
-    def __init__(self) -> None:
+    def __init__(self, llm: Small_LLM_Model) -> None:
+        self._llm: Small_LLM_Model = llm
         self._file_path1: str = "data/input/function_calling_tests.json"
         self._file_path2: str = "data/input/functions_definition.json"
+        self._file_path3: str = self._llm.get_path_to_tokenizer_file()
+        self._file_path4: str = self._llm.get_path_to_vocab_file()
+        self._tokenizer: dict[str, Any]
+        self._vocabs: dict[str, Any]
         self._prompt: list[str] = []
         self._functions: list[dict[str, Any]] = []
 
@@ -59,8 +65,22 @@ class Parser():
                         raise FunctionsFileError()
                 continue
 
+    def read_tokenizer(self) -> None:
+        with open(self._file_path3, "r") as file:
+            self._tokenizer = load(file)
+
+    def read_vocabs(self) -> None:
+        with open(self._file_path4, "r") as file:
+            self._vocabs = load(file)
+
     def get_prompts(self) -> list[str]:
         return self._prompt
 
     def get_functions(self) -> list[dict[str, Any]]:
         return self._functions
+
+    def get_tokenizer(self) -> dict[str, Any]:
+        return self._tokenizer
+
+    def get_vocabs(self) -> dict[str, Any]:
+        return self._vocabs
