@@ -1,17 +1,15 @@
 from typing import Any, Literal
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 ValueDefinition = Literal["string", "number", "integer", "boolean"]
 
 
 class ParameterValidator(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    params: ValueDefinition
+    type: ValueDefinition
 
 
 class FunctionValidator(BaseModel):
-    model_config = ConfigDict(extra="forbid")
     name: str = Field(min_length=3)
     description: str = Field(..., description="Function's description")
     parameters: dict[str, ParameterValidator]
@@ -26,12 +24,10 @@ class FunctionValidator(BaseModel):
 
 
 class PromptValidator(BaseModel):
-    model_config = ConfigDict(extra="forbid")
     prompt: str
 
 
 class OutputValidator(BaseModel):
-    model_config = ConfigDict(extra="forbid")
     prompt: str
     name: str = Field(min_length=3)
     parameters: dict[str, Any]
