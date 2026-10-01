@@ -18,7 +18,7 @@ class Parser():
             default="data/input/function_calling_tests.json")
         parser.add_argument(
             "--output",
-            default="data/output/function_calls.json")
+            default="data/output/function_calling_results.json")
         return parser.parse_args()
 
     def read_files(self) -> tuple[
