@@ -76,6 +76,16 @@ class ConstrainedDecoder():
             raise ValueError("Unable to generate function name.")
         return self._llm.decode(generated)
 
+    def func_prompt_solver(self) -> list[str]:
+        n: int = len(self._prompts)
+        res: list[str] = []
+        for x in range(n):
+            try:
+                res += [self.solve_function(self._prompts[x].prompt)]
+            except ValueError:
+                raise ValueError("Unable to solve all prompts.")
+        return res
+
     def find_valid_tokens(self) -> None:
         ...
 

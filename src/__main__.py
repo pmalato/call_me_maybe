@@ -9,8 +9,7 @@ def main() -> None:
         llm: Small_LLM_Model = Small_LLM_Model()
         prs: Parser = Parser(llm)
         decoder: ConstrainedDecoder = ConstrainedDecoder(llm, prs)
-        prompts = prs.get_tuple()[1]
-        print(decoder.solve_function(prompts[0].prompt))
+        [print(i) for i in decoder.func_prompt_solver()]
     except (ValidationError, ValueError, ImportError) as error:
         print(error)
 
