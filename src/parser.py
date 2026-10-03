@@ -1,12 +1,17 @@
+from llm_sdk.llm_sdk import Small_LLM_Model
 from argparse import ArgumentParser, Namespace
 from pydantic import TypeAdapter
 from .models import FunctionValidator, PromptValidator
+from json import load
 
 
 class Parser():
-    def __init__(self):
+    def __init__(self, llm: Small_LLM_Model):
+        self._llm: Small_LLM_Model = llm
         self._tuple: tuple[list[FunctionValidator], list[PromptValidator]]
         self._tuple = self.read_files()
+        self._vocabs: list[str] = []
+        self.read_vocabs()
 
     def parse_args(self) -> Namespace:
         parser: ArgumentParser = ArgumentParser()
@@ -35,7 +40,17 @@ class Parser():
                 prompt_file.read())
         return functions, prompts
 
+    def read_vocabs(self) -> None:
+        path: str = self._llm.get_path_to_vocab_file()
+        with open(path, "r") as file:
+            vocabs: dict[str, int] = load(file)
+        for x in vocabs:
+            self._vocabs += [x]
+
     def get_tuple(self) -> tuple[
             list[FunctionValidator],
             list[PromptValidator]]:
         return self._tuple
+
+    def get_vocabs(self) -> list[str]:
+        return self._vocabs
