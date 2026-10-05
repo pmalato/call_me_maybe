@@ -1,11 +1,12 @@
 from typing import Any, Literal
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
 ValueDefinition = Literal["string", "number", "integer", "boolean"]
 
 
 class ParameterValidator(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     type: ValueDefinition
 
 

@@ -93,9 +93,6 @@ class ConstrainedDecoder():
             temp += self.func_tokens_helper(x)
         return temp
 
-    def is_func_name_over(self, generated: list[int]) -> bool:
-        return generated in self._func_ids
-
     def append_context(self, prompt: str) -> list[int]:
         text: str = (
             "<|im_start|>system\n"
@@ -108,6 +105,9 @@ class ConstrainedDecoder():
             + '{"name": "'
         )
         return [int(x) for x in self._llm.encode(text)[0]]
+
+    def is_func_name_over(self, generated: list[int]) -> bool:
+        return generated in self._func_ids
 
     def solve_function(self, prompt: str) -> FunctionValidator:
         ids: list[int] = self.append_context(prompt)
@@ -170,14 +170,4 @@ class ConstrainedDecoder():
                 res[type] = int(res_text)
             else:
                 res[type] = float(res_text)
-        return res
-
-    def func_prompt_solver(self) -> list[FunctionValidator]:
-        n: int = len(self._prompts)
-        res: list[FunctionValidator] = []
-        for x in range(n):
-            try:
-                res += [self.solve_function(self._prompts[x].prompt)]
-            except ValueError:
-                raise ValueError("Unable to solve all prompts.")
         return res

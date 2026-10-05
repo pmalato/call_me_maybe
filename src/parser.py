@@ -1,7 +1,8 @@
 from llm_sdk.llm_sdk import Small_LLM_Model
 from argparse import ArgumentParser, Namespace
 from pydantic import TypeAdapter
-from .models import FunctionValidator, PromptValidator
+from typing import Any
+from .models import FunctionValidator, PromptValidator, OutputValidator
 from json import load
 
 
@@ -46,6 +47,13 @@ class Parser():
             vocabs: dict[str, int] = load(file)
         for x in vocabs:
             self._vocabs += [x]
+
+    @staticmethod
+    def check_output(
+            prompt: str, function: str,
+            args: dict[str, Any]) -> OutputValidator:
+        return OutputValidator(
+            prompt=prompt, name=function, parameters=args)
 
     def get_tuple(self) -> tuple[
             list[FunctionValidator],
