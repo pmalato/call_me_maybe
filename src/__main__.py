@@ -40,7 +40,7 @@ def main() -> None:
         end: float = perf_counter()
         print(end - start)
     except (
-            KeyboardInterrupt, ValidationError,
+            KeyboardInterrupt, ValidationError, OSError,
             ValueError, ImportError) as error:
         print(error)
 

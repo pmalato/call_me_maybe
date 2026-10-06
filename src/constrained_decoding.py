@@ -158,7 +158,7 @@ class ConstrainedDecoder():
             "call. \n\nAvaliable functions:\n"
             + self.create_func_tokens()
             + "<|im_end|>\n<|im_start|>user\n" + prompt
-            + "<|im_end|>\n<|im_start|>assistante\n<think>\n\n</think>\n\n"
+            + "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
             + '{"name": "'
         )
         return [int(x) for x in self._llm.encode(text)[0]]
