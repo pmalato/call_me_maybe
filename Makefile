@@ -1,5 +1,5 @@
 export UV_CACHE_DIR := $(HOME)/sgoinfre/pecoelho/.cache/uv
-export HF_HOME := &(HOME)/sgoinfre/pecoelho/.cache/hugginface
+export HF_HOME := $(HOME)/sgoinfre/pecoelho/.cache/hugginface
 
 RUN_FLAG1 = --functions_definition data/input/functions_definition.json
 RUN_FLAG2 = --input data/input/function_calling_tests.json

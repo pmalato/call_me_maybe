@@ -9,7 +9,24 @@ MAX_VALUE_TOKENS: int = 64
 
 
 class ConstrainedDecoder():
+    """Chooses a function and fills its arguments token by token.
+
+    Attributes:
+        _llm: The LLM wrapper used to get logits, encode and decode.
+        _parser: Source of the functions, prompts and vocabulary.
+        _functions: The available function definitions.
+        _prompts: The prompts to process.
+        _vocabs: Decoded text of every token id.
+        _func_ids: Token ids of each function name.
+        _args_ids: Sets of token ids by category (digits, strings...).
+    """
     def __init__(self, llm: Small_LLM_Model, parser: Parser) -> None:
+        """Prepare the decoder and precompute every token filter.
+
+        Args:
+            llm: The LLM wrapper.
+            parser: A parser that already loaded files and vocabulary.
+        """
         self._llm: Small_LLM_Model = llm
         self._parser: Parser = parser
         self._functions: list[FunctionValidator] = self._parser.get_tuple()[0]
@@ -55,6 +72,17 @@ class ConstrainedDecoder():
 
     def set_invalid_func_logits(
             self, logits: list[float], generated: list[int]) -> list[float]:
+        """Mask every token that cannot continue a valid function name.
+
+        Args:
+            logits: Raw logits returned by the model.
+            generated: Token ids of the function name generated so far.
+
+        Returns:
+            A list the size of `logits` where only tokens that extend
+            `generated` towards a known function name keep their logit;
+            all the others are set to negative infinity.
+        """
         n: int = len(generated)
         allowed: set = set()
         for x in self._func_ids:
@@ -66,7 +94,16 @@ class ConstrainedDecoder():
         return mask
 
     def set_valid_args_logits(self, kind: str, text: str) -> set[int]:
-        """Return the token ids allowed next, given the value so far."""
+        """Return the token ids allowed next, given the value so far.
+
+        Args:
+            kind: Parameter type: "string", "number", "integer" or
+                "boolean".
+            text: The text of the value generated so far.
+
+        Returns:
+            The set of token ids that keep the value valid for `kind`.
+        """
         temp: dict[str, set[int]] = self._args_ids
         if kind == "boolean":
             return temp["bool"]
@@ -83,17 +120,37 @@ class ConstrainedDecoder():
         return allowed
 
     def func_tokens_helper(self, function: FunctionValidator) -> str:
+        """Format one function as a line of the system prompt.
+
+        Args:
+            function: The function definition.
+
+        Returns:
+            A line such as "- fn_name(a: number): description\\n".
+        """
         params: str = ", ".join(
             f"{x}: {y.type}" for x, y in function.parameters.items())
         return f"- {function.name}({params}): {function.description}\n"
 
     def create_func_tokens(self) -> str:
+        """Return the list of all functions, formatted for the prompt."""
         temp: str = ""
         for x in self._functions:
             temp += self.func_tokens_helper(x)
         return temp
 
     def append_context(self, prompt: str) -> list[int]:
+        """Build the chat prompt and encode it.
+
+        The prompt lists the available functions, contains the user's
+        request and ends with the beginning of the JSON answer.
+
+        Args:
+            prompt: The user's natural-language request.
+
+        Returns:
+            The token ids of the full context.
+        """
         text: str = (
             "<|im_start|>system\n"
             "You are a function-calling assistant. Choose the best function "
@@ -107,9 +164,28 @@ class ConstrainedDecoder():
         return [int(x) for x in self._llm.encode(text)[0]]
 
     def is_func_name_over(self, generated: list[int]) -> bool:
+        """Tell whether the generated tokens form a full function name.
+
+        Args:
+            generated: Token ids generated so far.
+
+        Returns:
+            True if `generated` matches exactly one function name.
+        """
         return generated in self._func_ids
 
     def solve_function(self, prompt: str) -> FunctionValidator:
+        """Let the LLM choose a function, restricted to valid names.
+
+        Args:
+            prompt: The user's natural-language request.
+
+        Returns:
+            The chosen function definition.
+
+        Raises:
+            ValueError: If no valid function name could be generated.
+        """
         ids: list[int] = self.append_context(prompt)
         generated: list[int] = []
         for _ in range(MAX_NAME_TOKENS):
@@ -126,7 +202,18 @@ class ConstrainedDecoder():
         raise ValueError("Unable to generate function name.")
 
     def solve_value(self, ids: list[int], kind: str) -> tuple[str, list[int]]:
-        """Generates one value, token by token. Returns its text and ids"""
+        """Generates one value, token by token. Returns its text and ids
+
+        Args:
+            ids: The full context so far, as token ids.
+            kind: Parameter type: "string", "number", "integer" or
+                "boolean".
+
+        Returns:
+            A tuple (text, token_ids) of the generated value. The
+            terminating token (closing quote, comma or brace) is not
+            included.
+        """
         text: str = ""
         generated: list[int] = []
         for _ in range(MAX_VALUE_TOKENS):
@@ -146,7 +233,19 @@ class ConstrainedDecoder():
 
     def solve_args(
             self, prompt: str, function: FunctionValidator) -> dict[str, Any]:
-        """Fill every parameter of the chosen function, in order."""
+        """Fill every parameter of the chosen function, in order.
+
+        The JSON skeleton (keys, quotes, separators) is appended by the
+        program; only the values are generated by the model.
+
+        Args:
+            prompt: The user's natural-language request.
+            function: The function chosen by `solve_function`.
+
+        Returns:
+            A mapping of parameter name to a value of the correct
+            Python type (str, bool, int or float).
+        """
         ids: list[int] = self.append_context(prompt)
         ids += [int(x) for x in self._llm.encode(function.name)[0]]
         ids += [int(x) for x in self._llm.encode('", "parameters": {')[0]]

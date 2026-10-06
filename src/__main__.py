@@ -8,6 +8,13 @@ from time import perf_counter
 
 
 def main() -> None:
+    """Run the function calling pipeline over every input prompt.
+
+    For each prompt, the function is chosen with constrained decoding,
+    then its arguments are generated, validated, printed, and finally
+    all results are written to the output file. Expected errors are
+    reported with a message instead of a traceback.
+    """
     try:
         start: float = perf_counter()
         llm: Small_LLM_Model = Small_LLM_Model()
@@ -28,6 +35,7 @@ def main() -> None:
                  "parameters": output.parameters}
             ]
             [print(f"{x}: {visual[i][x]}") for x in visual[i]]
+            print()
         parser.write_output(res)
         end: float = perf_counter()
         print(end - start)

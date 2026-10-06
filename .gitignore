@@ -2,3 +2,5 @@
 *.mypy_cache
 &(HOME)/sgoinfre
 data/output
+moulinette/
+data/correction
