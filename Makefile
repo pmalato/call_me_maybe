@@ -24,11 +24,11 @@ clean:
 	clear
 
 lint:
-	python3 -m flake8 .
-	python3 -m mypy . $(LFLAGS)
+	uv run python3 -m flake8 src
+	uv run python3 -m mypy src $(LFLAGS)
 
 lint-strict:
-	python3 -m flake8 .
-	python3 -m mypy --strict .
+	uv run python3 -m flake8 src
+	uv run python3 -m mypy --strict src
 
 .PHONY: install run debug clean lint lint-strict

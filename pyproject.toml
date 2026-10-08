@@ -21,3 +21,9 @@ extend-exclude = [
     "llm_sdk",
     "moulinette"
 ]
+
+[tool.mypy]
+exclude = [
+    "llm_sdk",
+    "moulinette"
+]
